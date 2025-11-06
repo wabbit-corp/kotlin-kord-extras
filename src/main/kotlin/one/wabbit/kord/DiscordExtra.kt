@@ -1,15 +1,15 @@
 package one.wabbit.kord
 
-import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.channel.withTyping
 import dev.kord.core.entity.ReactionEmoji
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
-import io.ktor.client.request.forms.*
-import io.ktor.util.cio.*
 
-suspend fun dev.kord.core.entity.Message.withReaction(reaction: ReactionEmoji, block: suspend () -> Unit) {
+suspend fun dev.kord.core.entity.Message.withReaction(
+    reaction: ReactionEmoji,
+    block: suspend () -> Unit,
+) {
     var added = false
     try {
         this.addReaction(reaction)
@@ -19,9 +19,7 @@ suspend fun dev.kord.core.entity.Message.withReaction(reaction: ReactionEmoji, b
     }
 
     try {
-        this.channel.withTyping {
-            block()
-        }
+        this.channel.withTyping { block() }
     } finally {
         if (added) {
             try {
@@ -35,12 +33,17 @@ suspend fun dev.kord.core.entity.Message.withReaction(reaction: ReactionEmoji, b
 
 // attachments: List<DownloadedFileInfo> = emptyList()
 // for (attachment in attachments) {
-//   addFile(attachment.fileName, ChannelProvider(attachment.size.toLong()) { attachment.file.readChannel() })
+//   addFile(attachment.fileName, ChannelProvider(attachment.size.toLong()) {
+// attachment.file.readChannel() })
 // }
 // if (reference != null) {
 //                    this.messageReference = reference
 //                }
-suspend fun MessageChannelBehavior.createLongMessage(text: String, first: UserMessageCreateBuilder.() -> Unit = {}, last: UserMessageCreateBuilder.() -> Unit = {}) {
+suspend fun MessageChannelBehavior.createLongMessage(
+    text: String,
+    first: UserMessageCreateBuilder.() -> Unit = {},
+    last: UserMessageCreateBuilder.() -> Unit = {},
+) {
     var content = text.trim()
     val parts = mutableListOf<String>()
 
